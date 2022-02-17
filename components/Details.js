@@ -2,12 +2,12 @@ import React from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 
 const Details = ({ route, navigation }) => {
-    const { name, job } = route.params;
+    const { data } = route.params;
     return (
         <View style={styles.container}>
             <Text>Details :</Text>
-            <Text>{name}</Text>
-            <Text>{job}</Text>
+            <Text>{data.first_name }</Text>
+            <Text>{data.last_name }</Text>
             <Button
                 title="Go to Home"
                 onPress={() => navigation.push('Home')}

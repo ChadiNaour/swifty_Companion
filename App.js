@@ -3,22 +3,17 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Home from './components/Home';
 import Details from './components/Details';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={DefaultTheme} >
       <Stack.Navigator initialRouteName="Home">
-        {/* <View style={styles.container}> */}
-          {/* <Text>Home</Text> */}
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Details" component={Details} initialParams={{name: "chadi"}} />
-          {/* <Details /> */}
-          {/* <StatusBar style="auto" /> */}
-        {/* </View> */}
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}/>
+        <Stack.Screen name="Details" component={Details} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -27,7 +22,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center',
   },
