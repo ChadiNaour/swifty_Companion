@@ -41,8 +41,20 @@ const Home = ({ navigation }) => {
               },
             }
           );
-          console.log(response.data);
-          navigation.navigate("Details", { data: response.data });
+          if (response.data)
+          {
+            var coalition = await axios.get(
+              "https://api.intra.42.fr/v2/users/" + response.data.id + "/coalitions",
+              {
+                headers: {
+                  Authorization: "Bearer " + token.access_token,
+                },
+              }
+            )
+            console.log("coalition is",coalition);
+            if (coalition.data)
+                navigation.navigate("Details", { data: response.data, coalition : coalition.data});
+          }
         } catch (error) {
             console.log(error.message);
           alert("login doesnt exist");
@@ -95,7 +107,7 @@ const Home = ({ navigation }) => {
     }
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={styles.container}>
             <View style={styles.Switch}>
                 <Switch
                     trackColor={{ false: "#767577", true: "#81b0ff" }}
@@ -109,7 +121,7 @@ const Home = ({ navigation }) => {
             </View>
 
             {/* {!loading ? */}
-            <View style={styles.container}>
+            <View style={styles.viewContainer}>
                 {/* <Text>sfsfsfsf</Text> */}
                 <Image style={styles.tinyLogo} source={Home_image} resizeMode="cover" />
                 <TextInput
@@ -135,12 +147,14 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // width: 100,
-        // height:100,
-        // backgroundColor: 'white',
-        alignItems: 'center',
+        paddingTop: 40,
+        backgroundColor: "white"
+        // alignItems: 'center',
         // justifyContent: 'center',
-        padding: 20
+    },
+    viewContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     tinyLogo: {
         width: 150,
@@ -152,16 +166,16 @@ const styles = StyleSheet.create({
         // borderColor: "red",
     },
     input: {
-        width: '90%',
+        width: '85%',
         margin: 12,
         borderWidth: 1,
         borderRadius: 5,
-        borderColor: '#e8e8e8',
+        borderColor: "gray",
         padding: 10,
     },
     button: {
-        backgroundColor: 'skyblue',
-        width: '90%',
+        backgroundColor: "black",
+        width: '85%',
         padding: 15,
         alignItems: 'center',
         borderRadius: 5,
@@ -174,7 +188,8 @@ const styles = StyleSheet.create({
     Switch: {
         padding: 15,
         alignItems: "flex-end",
-    },
+        // backgroundColor:"red"
+      },
 });
 
 export default Home;
