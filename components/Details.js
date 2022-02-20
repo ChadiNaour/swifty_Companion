@@ -3,38 +3,41 @@ import {
     SafeAreaView,
     View,
     Text,
-    Image,
     StyleSheet,
     ImageBackground,
     ScrollView,
+    useWindowDimensions
 } from "react-native";
-import imagebg from "../assets/42.jpeg";
 import defaultImage from "../assets/default_img.png";
 import * as Progress from "react-native-progress";
 import { Icon } from "react-native-elements";
 import { RadioButton, Avatar, ProgressBar } from "react-native-paper";
+import { SvgCssUri } from 'react-native-svg';
+// import BiosSvg from "../file.svg";
 
 const Details = ({ route, navigation }) => {
     const [checked, setChecked] = useState("first");
+    const { height, width } = useWindowDimensions();
+
     const { data, coalition } = route.params;
 
     const full_name = data.first_name + " " + data.last_name;
-    const image = data.image_url;
+    const image = data.image_url ? data.image_url : defaultImage;
     const login = data.login;
-    const level = data.cursus_users[2]
-        ? data.cursus_users[2].level
-        : data.cursus_users[0].level;
-    const location = data.location;
     const email = data.email;
     const wallet = data.wallet + " ₳";
     const correction_point = data.correction_point;
+    //cursus
+    const cursus1 = data.cursus_users[2]
+        ? data.cursus_users[2]
+        : (data.cursus_users[1] ? data.cursus_users[1] : data.cursus_users[0]);
+    // cursus name
     const cursus = data.cursus_users[2]
         ? data.cursus_users[2].cursus.name
-        : data.cursus_users[0].cursus.name;
-    const grade = data.cursus_users[2]
-        ? data.cursus_users[2].grade
-        : data.cursus_users[0].grade;
-    const cursus_skills = data.cursus_users[0].skills;
+        : (data.cursus_users[1].cursus.name ? data.cursus_users[1].cursus.name : data.cursus_users[0].cursus.name);
+    const grade = cursus1.grade;
+    const cursus_skills = cursus1.skills;
+    const level = cursus1.level;
     const cursus_project = data.projects_users;
 
     const level_per = (level % 100) - parseInt(level);
@@ -43,9 +46,6 @@ const Details = ({ route, navigation }) => {
     data?.cursus_users.map((el, key) => arr.push(el.cursus.name));
     const cover = {
         uri: `${coalition1?.cover_url}`,
-    };
-    const img_coallition = {
-        uri: `${coalition1?.image_url}`,
     };
 
     return (
@@ -89,12 +89,12 @@ const Details = ({ route, navigation }) => {
                                 flex: 0.15,
                             }}
                         >
-                            {/* <SvgUri
-                            uri={coalition1.image_url}
-                            width={"100%"}
-                            height={"100%"}
-                            fill="#fff"
-                        /> */}
+                            <SvgCssUri
+                                width="100%"
+                                height="100%"
+                                uri={coalition1.image_url}
+                                fill="white"
+                            />
                         </View>
                         <Text style={{
                             fontSize: 17,
@@ -115,7 +115,7 @@ const Details = ({ route, navigation }) => {
                     >
                         <Avatar.Image
                             size={150}
-                            source={{ uri: `${data.image_url}` }}
+                            source={{ uri: `${image}` }}
                             style={styles.img}
                         />
 
@@ -129,13 +129,6 @@ const Details = ({ route, navigation }) => {
                             }}
                         />
                     </View>
-                    {/* <ModalDropdown
-                    options={arr}
-                    animated={true}
-                    defaultIndex={0}
-                    // onSelect={(e) => setvalue(e)}
-                /> */}
-                    {/* // <Icon type="font-awesome-5" name="sort-down" color="#000" /> */}
                     {data.location ? (
                         <Text
                             style={{
@@ -148,25 +141,18 @@ const Details = ({ route, navigation }) => {
                             {data.location}
                         </Text>
                     ) : (
-                            <Text
-                                style={{
-                                    textAlign: "center",
-                                    fontWeight: "bold",
-                                    fontSize: 16,
-                                    color: "#fff",
-                                }}
-                            >
-                                unavailable
-                            </Text>
-                        )}
+                        <Text
+                            style={{
+                                textAlign: "center",
+                                fontWeight: "bold",
+                                fontSize: 16,
+                                color: "#fff",
+                            }}
+                        >
+                            unavailable
+                        </Text>
+                    )}
                 </ImageBackground>
-                {/* <View>
-                    {image ? (
-                        <Image style={styles.profileImg} source={{ uri: image }} />
-                    ) : (
-                            <Image style={styles.profileImg} source={{ uri: defaultImage }} />
-                        )}
-                </View> */}
                 <SafeAreaView
                     style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
                 >
@@ -203,39 +189,39 @@ const Details = ({ route, navigation }) => {
                         </Text>
                         <Text style={{ marginTop: 5, color: "#fff" }}>Grade: {grade}</Text>
                     </View>
-                    <View style={{ marginTop: 20, alignItems: "center" }}>
+                    <View style={{ marginTop: 20, alignItems: "center", justifyContent: 'center' }}>
                         <Progress.Bar
                             progress={level_per}
-                            width={290}
+                            width={300}
                             color={coalition1.color}
-                            height={15}
+                            height={20}
                         >
                             <Text
                                 style={{
                                     position: "absolute",
                                     color: "#fff",
-                                    fontSize: 12,
+                                    fontSize: 11,
                                     marginLeft: 120,
                                 }}
                             >
-                                {level}
+                                Level {level}%
                             </Text>
                         </Progress.Bar>
                     </View>
 
-                    <View style={{ flexDirection: "row", marginTop: 30 }}>
-                        <Text style={{ color: "white" }}>Projects</Text>
+                    <View style={{ flexDirection: "row", marginTop: 30, marginBottom: 10 }}>
+                        <Text style={{ color: "white" }}>Skills</Text>
                         <RadioButton
-                            value="first"
+                            value="second"
                             uncheckedColor="white"
                             color={coalition1.color}
                             status={checked === "first" ? "checked" : "unchecked"}
                             onPress={() => setChecked("first")}
                         />
 
-                        <Text style={{ color: "white" }}>Skills</Text>
+                        <Text style={{ color: "white" }}>Projects</Text>
                         <RadioButton
-                            value="second"
+                            value="first"
                             uncheckedColor="white"
                             color={coalition1.color}
                             status={checked === "second" ? "checked" : "unchecked"}
@@ -243,7 +229,7 @@ const Details = ({ route, navigation }) => {
                         />
                     </View>
                     <View style={{ flexDirection: "column", padding: 5, marginBottom: 30 }}>
-                        {checked === "second"
+                        {checked === "first"
                             ? cursus_skills.map((item, i) => {
                                 return (
                                     <View key={item.id} style={{ marginTop: 7, marginBottom: 5 }}>
@@ -266,30 +252,11 @@ const Details = ({ route, navigation }) => {
                                             }}>{item.level.toFixed(2)}%</Text>
                                         </View>
                                         <ProgressBar
-                                            progress={(item.level / 10).toFixed(2)}
+                                            progress={item.level.toFixed(2) / 100}
                                             color={coalition1.color}
-                                            style={{ width: 280, height: 5 }}
+                                            style={{ width: 300, height: 5 }}
                                         />
                                     </View>
-                                    // <View
-                                    //     style={{
-                                    //         flexDirection: "row",
-                                    //         alignItems: "center",
-                                    //         justifyContent: "space-between",
-                                    //     }}
-                                    //     key={i}
-                                    // >
-                                    //     <Text
-                                    //         style={{
-                                    //             fontSize: 18,
-                                    //             color: "#fff",
-                                    //             textAlign: "right",
-                                    //         }}
-                                    //     >
-                                    //         {item.name}:{" "}
-                                    //     </Text>
-                                    //     <Text style={styles.text}>{item.level}%</Text>
-                                    // </View>
                                 );
                             })
                             : cursus_project.map((item, i) => {
@@ -299,6 +266,11 @@ const Details = ({ route, navigation }) => {
                                             flexDirection: "row",
                                             alignItems: "center",
                                             justifyContent: "space-between",
+                                            paddingVertical: 10,
+                                            paddingHorizontal: 10,
+                                            width: width,
+                                            borderBottomWidth: 1,
+                                            borderBottomColor: "gray"
                                         }}
                                         key={i}
                                     >
@@ -351,7 +323,6 @@ const styles = StyleSheet.create({
         backgroundColor: "black"
     },
     image: {
-        // flex: 1,
         justifyContent: "center",
         width: "100%",
         height: 250,
@@ -360,8 +331,6 @@ const styles = StyleSheet.create({
         width: 150,
         height: 150,
         borderRadius: 100,
-        // marginTop: 10,
-        // marginBottom: 10
     },
     profileImg: {
         width: 500,

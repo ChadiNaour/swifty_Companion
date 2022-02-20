@@ -1,20 +1,14 @@
 import React from "react";
-import { View, Text, StyleSheet, Pressable, Image, TextInput, useWindowDimensions, SafeAreaView, Switch, ActivityIndicator, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, Pressable, Image, TextInput, SafeAreaView, ActivityIndicator, ImageBackground } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import Home_image from '../assets/42_Logo.svg.png';
+import Home_image from '../assets/42_logo.png';
 import { user_id, user_secret } from "../config.json";
 import Image_background from "../assets/42.jpeg"
 
 const Home = ({ navigation }) => {
     const [login, onChangeLogin] = React.useState("");
-    const [enabled, setEnabled] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
-    const { height, width } = useWindowDimensions();
-
-    const toggleSwitch = () => {
-        setEnabled(oldValue => !oldValue)
-    }
 
     const getToken = async () => {
         try {
@@ -43,6 +37,7 @@ const Home = ({ navigation }) => {
                 }
             );
             if (response.data) {
+                console.log(response.data);
                 var coalition = await axios.get(
                     "https://api.intra.42.fr/v2/users/" + response.data.id + "/coalitions",
                     {
@@ -53,11 +48,15 @@ const Home = ({ navigation }) => {
                 )
                 console.log("coalition is", coalition);
                 if (coalition.data)
+                {
+                    setLoading(false);
                     navigation.navigate("Details", { data: response.data, coalition: coalition.data });
+                }
             }
         } catch (error) {
             console.log(error.message);
             alert("login doesnt exist");
+            setLoading(false)
         }
     };
 
@@ -65,8 +64,6 @@ const Home = ({ navigation }) => {
         setLoading(true);
         if (login && login !== "") {
             try {
-                // var token = await getToken();
-                // await AsyncStorage.setItem("access_token", JSON.stringify(token));
                 var token = await AsyncStorage.getItem("access_token");
                 if (token) {
 
@@ -83,25 +80,18 @@ const Home = ({ navigation }) => {
                     if (token)
                         await AsyncStorage.setItem("access_token", JSON.stringify(token));
                 }
-                // var token = await getToken();
-                // console.log(token);
-                // var token = await AsyncStorage.getItem("access_token");
-                // if (token)
-                //     console.log("token fron storage", token)
-                // else {
-                //     token = await getToken();
-                //     if (token)
-                //         await AsyncStorage.setItem("access_token", token);
-                // }
                 await sendRequ(login, token);
             }
             catch (error) {
                 console.log(error);
+                alert(error);
+                setLoading(false);
             }
 
         }
         else
             alert("you should set a login first");
+            setLoading(false)
     }
 
     return (
@@ -109,41 +99,25 @@ const Home = ({ navigation }) => {
             <ImageBackground
                 source={Image_background}
                 resizeMode="cover"
-                style={{height: height,         paddingTop: 40,}}
-                // style={styles.image}
+                style={{flex : 1,height: "100%", width: "100%", display : "flex", justifyContent:"center"}}
             >
-                <View style={styles.Switch}>
-                    <Switch
-                        trackColor={{ false: "#767577", true: "#81b0ff" }}
-                        thumbColor={enabled ? "#f5dd4b" : "#f4f3f4"}
-                        ios_backgroundColor="#3e3e3e"
-                        value={enabled}
-                        onValueChange={toggleSwitch}
-                    // onValueChange={() => setTheme(!theme)}
-                    // value={!theme}
-                    />
-                </View>
-
-                {/* {!loading ? */}
+                {!loading ?
                 <View style={styles.viewContainer}>
-                    {/* <Text>sfsfsfsf</Text> */}
                     <Image style={styles.tinyLogo} source={Home_image} resizeMode="cover" />
                     <TextInput
                         style={styles.input}
                         onChangeText={onChangeLogin}
                         value={login}
                         placeholder="Login"
-                    // keyboardType="numeric"
                     />
                     <Pressable
                         style={styles.button}
-                        // title="Search"
                         onPress={() => fetchLogin(login)}
                     >
                         <Text style={styles.text}>Search</Text>
                     </Pressable>
                 </View>
-                {/* : <ActivityIndicator size="large" color="#00ff00" />} */}
+                : <ActivityIndicator size="large" color="#00b0b2" />}
             </ImageBackground>
         </SafeAreaView>
     )
@@ -152,11 +126,10 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "white"
-        // alignItems: 'center',
-        // justifyContent: 'center',
+        justifyContent: 'center',
     },
     viewContainer: {
+        marginTop : -100,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -166,33 +139,29 @@ const styles = StyleSheet.create({
         maxWidth: 200,
         maxHeight: 200,
         marginLeft: -20,
-        // borderWidth: 1,
-        // borderColor: "red",
     },
     input: {
-        width: '85%',
+        width: '80%',
         margin: 12,
         borderWidth: 1,
         borderRadius: 5,
-        borderColor: "gray",
+        borderColor: "#00b0b2",
+        backgroundColor: "white",
         padding: 10,
     },
     button: {
-        backgroundColor: "black",
-        width: '85%',
+        backgroundColor: "#00b0b2",
+        width: '80%',
         padding: 15,
         alignItems: 'center',
+        justifyContent: 'center',
         borderRadius: 5,
     },
     text: {
         fontWeight: 'bold',
-        color: 'white'
+        color: 'white',
+        fontSize: 17,
 
-    },
-    Switch: {
-        padding: 15,
-        alignItems: "flex-end",
-        // backgroundColor:"red"
     },
 });
 
