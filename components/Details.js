@@ -29,15 +29,15 @@ const Details = ({ route, navigation }) => {
     const [value, setvalue] = useState(0);
     // const [coalition, setCoalition] = useState(data.cursus_users.length - 1)
     const [selectedValue, setSelectedValue] = useState(cursus?.cursus.name);
-    const [image, setImage] = useState(defaultImage)
+    const [image, setImage] = useState(null)
 
     //swap cursus
-    const ChangeCursus = (selectedValue) => {
+    const ChangeCursus = (selectedValue, index) => {
         console.log(arr);
         // console.log(data.cursus_users)
         // console.log("indix :",index);
         // console.log("value : ",selectedValue)
-        setSelectedValue(selectedValue)
+        setSelectedValue(index)
         setCursus(data.cursus_users[selectedValue]);
     }
 
@@ -165,11 +165,12 @@ const Details = ({ route, navigation }) => {
                         {image ?
                             <Avatar.Image
                                 size={150}
+                                // source={defaultImage}
                                 source={{ uri: `${image}` }}
                                 style={styles.img}
                             /> : <Avatar.Image
                                 size={150}
-                                source={{ uri: `${defaultImage}` }}
+                                source={defaultImage}
                                 style={styles.img}
                             />
                         }
@@ -251,7 +252,7 @@ const Details = ({ route, navigation }) => {
                                         animated={true}
                                         // defaultIndex={0}
                                         textStyle={{ color: "white" }}
-                                        onSelect={(selectedValue) => ChangeCursus(selectedValue)}
+                                        onSelect={(selectedValue, index) => ChangeCursus(selectedValue, index)}
                                         defaultValue={selectedValue}
                                         // showsVerticalScrollIndicator={true}
                                         dropdownStyle={{ width: 190, marginTop: -30 }}
