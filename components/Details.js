@@ -1,49 +1,87 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import {
     SafeAreaView,
     View,
     Text,
     StyleSheet,
     ImageBackground,
+    useWindowDimensions,
     ScrollView,
-    useWindowDimensions
+    // Picker
+
 } from "react-native";
+import { Picker } from '@react-native-picker/picker';
+// import { ScrollView } from 'react-native-virtualized-view';
 import defaultImage from "../assets/default_img.png";
 import * as Progress from "react-native-progress";
 import { Icon } from "react-native-elements";
 import { RadioButton, Avatar, ProgressBar } from "react-native-paper";
-import { SvgCssUri } from 'react-native-svg';
+import DropDownPicker from 'react-native-dropdown-picker';
+// import { SvgCssUri } from 'react-native-svg';
 // import BiosSvg from "../file.svg";
 
 const Details = ({ route, navigation }) => {
-    const [checked, setChecked] = useState("first");
-    const { height, width } = useWindowDimensions();
-
     const { data, coalition } = route.params;
+    const { width, height } = useWindowDimensions();
+    const [checked, setChecked] = useState("first");
+    const [cursus, setCursus] = useState(data.cursus_users[data.cursus_users.length - 1]);
+    // const [coalition, setCoalition] = useState(data.cursus_users.length - 1)
+    const [selectedValue, setSelectedValue] = useState(cursus?.cursus.name);
+    const [image, setImage] = useState(defaultImage)
 
-    const full_name = data.first_name + " " + data.last_name;
-    const image = data.image_url ? data.image_url : defaultImage;
-    const login = data.login;
-    const email = data.email;
+    //swap cursus
+    const ChangeCursus = (selectedValue, key) => {
+        setCursus(data.cursus_users[key]);
+        setSelectedValue(selectedValue)
+    }
+
+    //check image 
+    function checkImage(url) {
+        var request = new XMLHttpRequest();
+        request.open("GET", url, true);
+        request.send();
+        request.onload = function () {
+            status = request.status;
+            if (request.status == 200) //if(statusText == OK)
+            {
+                setImage(url)
+            } else {
+                console.log("image doesn't exist");
+            }
+        }
+    }
+    useEffect(() => {
+        checkImage(data.image_url);
+    }, [checkImage])
+
+    //normal data
+    const full_name = data?.first_name + " " + data?.last_name;
+    // console.log("bnscscsc")
+    // console.log("return is", checkImage(data.image_url))
+    // console.log("bnscscsc")
+    // console.log(image)
+    // checkImage(data.image_url);
+    // console.log(image)
+    const login = data?.login;
+    const email = data?.email;
     const wallet = data.wallet + " ₳";
-    const correction_point = data.correction_point;
-    //cursus
-    const cursus1 = data.cursus_users[2]
-        ? data.cursus_users[2]
-        : (data.cursus_users[1] ? data.cursus_users[1] : data.cursus_users[0]);
-    // cursus name
-    const cursus = data.cursus_users[2]
-        ? data.cursus_users[2].cursus.name
-        : (data.cursus_users[1].cursus.name ? data.cursus_users[1].cursus.name : data.cursus_users[0].cursus.name);
-    const grade = cursus1.grade;
-    const cursus_skills = cursus1.skills;
-    const level = cursus1.level;
-    const cursus_project = data.projects_users;
+    const correction_point = data?.correction_point;
 
+    // cursus infos
+    const grade = cursus?.grade;
+    const cursus_skills = cursus?.skills;
+    const level = cursus?.level;
     const level_per = (level % 100) - parseInt(level);
+
+    //projects
+    const cursus_project = [];
+    data?.projects_users.map((item, i) => {
+        if (item.cursus_ids.includes(cursus?.cursus_id))
+            cursus_project[i] = item;
+    });
+
+    //coalition
     const coalition1 = coalition.length > 0 ? coalition[0] : coalition;
-    let arr = [];
-    data?.cursus_users.map((el, key) => arr.push(el.cursus.name));
     const cover = {
         uri: `${coalition1?.cover_url}`,
     };
@@ -77,7 +115,7 @@ const Details = ({ route, navigation }) => {
                                 justifyContent: "center",
                                 alignItems: "center",
                                 padding: 5,
-                                backgroundColor: coalition1.color,
+                                backgroundColor: coalition1?.color,
                                 maxWidth: 60,
                                 maxHeight: 100,
                                 minWidth: 60,
@@ -89,19 +127,19 @@ const Details = ({ route, navigation }) => {
                                 flex: 0.15,
                             }}
                         >
-                            <SvgCssUri
+                            {/* <SvgCssUri
                                 width="100%"
                                 height="100%"
                                 uri={coalition1.image_url}
                                 fill="white"
-                            />
+                            /> */}
                         </View>
                         <Text style={{
                             fontSize: 17,
                             fontWeight: "bold",
-                            color: coalition1.color,
+                            color: coalition1?.color,
                         }}>
-                            {coalition1.name}
+                            {coalition1?.name}
                         </Text>
                     </View>
                     <View
@@ -122,14 +160,14 @@ const Details = ({ route, navigation }) => {
                         <Avatar.Text
                             size={19}
                             style={{
-                                backgroundColor: data.location ? "#00A400" : "#606770",
+                                backgroundColor: data?.location ? "#00A400" : "#606770",
                                 position: "absolute",
                                 top: "80%",
                                 left: "59%",
                             }}
                         />
                     </View>
-                    {data.location ? (
+                    {data?.location ? (
                         <Text
                             style={{
                                 textAlign: "center",
@@ -138,20 +176,20 @@ const Details = ({ route, navigation }) => {
                                 color: "#fff",
                             }}
                         >
-                            {data.location}
+                            {data?.location}
                         </Text>
                     ) : (
-                        <Text
-                            style={{
-                                textAlign: "center",
-                                fontWeight: "bold",
-                                fontSize: 16,
-                                color: "#fff",
-                            }}
-                        >
-                            unavailable
-                        </Text>
-                    )}
+                            <Text
+                                style={{
+                                    textAlign: "center",
+                                    fontWeight: "bold",
+                                    fontSize: 16,
+                                    color: "#fff",
+                                }}
+                            >
+                                unavailable
+                            </Text>
+                        )}
                 </ImageBackground>
                 <SafeAreaView
                     style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -177,6 +215,9 @@ const Details = ({ route, navigation }) => {
                         >
                             {login}
                         </Text>
+                        {data['staff?'] &&
+                            <View style={{ backgroundColor: "#e15757", borderRadius: 5, justifyContent: 'center', alignContent: "center", marginTop: 5, paddingHorizontal: 8, paddingVertical: 4 }}><Text style={{ color: "white" }}>STAFF</Text></View>
+                        }
                         <Text style={{ marginTop: 5, color: "#fff" }}>{email}</Text>
                         <Text style={{ marginTop: 25, color: "#fff" }}>
                             Wallet: {wallet}
@@ -184,16 +225,37 @@ const Details = ({ route, navigation }) => {
                         <Text style={{ marginTop: 5, color: "#fff" }}>
                             Evaluation Points: {correction_point}
                         </Text>
-                        <Text style={{ marginTop: 15, color: "#fff" }}>
-                            Cursus: {cursus}
-                        </Text>
-                        <Text style={{ marginTop: 5, color: "#fff" }}>Grade: {grade}</Text>
+                        <View style={{ display: "flex", flexDirection: "row", marginTop: 5 }}>
+                            {/* <Text style={{ color: "#fff" }}>
+                                Cursus: {" "}
+                            </Text> */}
+                            <Picker
+                                selectedValue={selectedValue}
+                                mode="dropdown"
+                                style={styles.picker}
+                                onValueChange={(selectedValue, key) => ChangeCursus(selectedValue, key)}
+                            >
+                                {
+                                    data?.cursus_users.map((item, i) => {
+                                        return (
+                                            <Picker.Item key={i} label={item.cursus?.name} value={item.cursus?.name} />
+                                        );
+                                    })
+                                }
+                                {/* <Picker.Item label="Java" value="java" />
+                            <Picker.Item label="JavaScript" value="js" /> */}
+                            </Picker>
+                        </View>
+                        {cursus?.grade != null ?
+
+                            <Text style={{ marginTop: 5, color: "#fff" }}>Grade: {grade}</Text> : <Text style={{ marginTop: 5, color: "#fff" }}>Grade: Novice</Text>
+                        }
                     </View>
                     <View style={{ marginTop: 20, alignItems: "center", justifyContent: 'center' }}>
                         <Progress.Bar
                             progress={level_per}
                             width={300}
-                            color={coalition1.color}
+                            color={coalition1?.color}
                             height={20}
                         >
                             <Text
@@ -202,6 +264,7 @@ const Details = ({ route, navigation }) => {
                                     color: "#fff",
                                     fontSize: 11,
                                     marginLeft: 120,
+                                    marginTop: 3
                                 }}
                             >
                                 Level {level}%
@@ -214,7 +277,7 @@ const Details = ({ route, navigation }) => {
                         <RadioButton
                             value="second"
                             uncheckedColor="white"
-                            color={coalition1.color}
+                            color={coalition1?.color}
                             status={checked === "first" ? "checked" : "unchecked"}
                             onPress={() => setChecked("first")}
                         />
@@ -223,14 +286,14 @@ const Details = ({ route, navigation }) => {
                         <RadioButton
                             value="first"
                             uncheckedColor="white"
-                            color={coalition1.color}
+                            color={coalition1?.color}
                             status={checked === "second" ? "checked" : "unchecked"}
                             onPress={() => setChecked("second")}
                         />
                     </View>
                     <View style={{ flexDirection: "column", padding: 5, marginBottom: 30 }}>
                         {checked === "first"
-                            ? cursus_skills.map((item, i) => {
+                            ? cursus_skills?.map((item, i) => {
                                 return (
                                     <View key={item.id} style={{ marginTop: 7, marginBottom: 5 }}>
                                         <View style={{ flexDirection: 'column' }}>
@@ -246,20 +309,20 @@ const Details = ({ route, navigation }) => {
                                             <Text style={{
                                                 fontSize: 12,
                                                 fontWeight: "bold",
-                                                color: coalition1.color,
+                                                color: coalition1?.color,
                                                 alignItems: "flex-end",
                                                 marginBottom: 2
                                             }}>{item.level.toFixed(2)}%</Text>
                                         </View>
                                         <ProgressBar
                                             progress={item.level.toFixed(2) / 100}
-                                            color={coalition1.color}
+                                            color={coalition1?.color}
                                             style={{ width: 300, height: 5 }}
                                         />
                                     </View>
                                 );
                             })
-                            : cursus_project.map((item, i) => {
+                            : cursus_project?.map((item, i) => {
                                 return (
                                     <View
                                         style={{
@@ -376,6 +439,15 @@ const styles = StyleSheet.create({
 
     green_mark: {
         color: "green",
+    },
+    picker: {
+        // marginVertical: 30,
+        width: 250,
+        // padding: 10,
+        // borderWidth: 1,
+        // borderColor: "white",
+        color: "white",
+        backgroundColor: "transparent"
     },
 });
 

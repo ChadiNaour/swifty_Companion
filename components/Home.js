@@ -29,7 +29,7 @@ const Home = ({ navigation }) => {
     const sendRequ = async (login, token) => {
         try {
             var response = await axios.get(
-                "https://api.intra.42.fr/v2/users/" + login.toLowerCase(),
+                "https://api.intra.42.fr/v2/users/" + (login.trim()).toLowerCase(),
                 {
                     headers: {
                         Authorization: "Bearer " + token.access_token,
