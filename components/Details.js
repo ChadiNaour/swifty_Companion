@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
     SafeAreaView,
     View,
@@ -6,18 +6,19 @@ import {
     StyleSheet,
     ImageBackground,
     useWindowDimensions,
+    TouchableOpacity,
     ScrollView,
     // Picker
 
 } from "react-native";
-import { Picker } from '@react-native-picker/picker';
+// import { Picker } from '@react-native-picker/picker';
 // import { ScrollView } from 'react-native-virtualized-view';
 import defaultImage from "../assets/default_img.png";
 import * as Progress from "react-native-progress";
 import { Icon } from "react-native-elements";
 import { RadioButton, Avatar, ProgressBar } from "react-native-paper";
-import DropDownPicker from 'react-native-dropdown-picker';
-// import { SvgCssUri } from 'react-native-svg';
+import ModalDropdown from 'react-native-modal-dropdown';
+import { SvgCssUri } from 'react-native-svg';
 // import BiosSvg from "../file.svg";
 
 const Details = ({ route, navigation }) => {
@@ -25,14 +26,19 @@ const Details = ({ route, navigation }) => {
     const { width, height } = useWindowDimensions();
     const [checked, setChecked] = useState("first");
     const [cursus, setCursus] = useState(data.cursus_users[data.cursus_users.length - 1]);
+    const [value, setvalue] = useState(0);
     // const [coalition, setCoalition] = useState(data.cursus_users.length - 1)
     const [selectedValue, setSelectedValue] = useState(cursus?.cursus.name);
     const [image, setImage] = useState(defaultImage)
 
     //swap cursus
-    const ChangeCursus = (selectedValue, key) => {
-        setCursus(data.cursus_users[key]);
+    const ChangeCursus = (selectedValue) => {
+        console.log(arr);
+        // console.log(data.cursus_users)
+        // console.log("indix :",index);
+        // console.log("value : ",selectedValue)
         setSelectedValue(selectedValue)
+        setCursus(data.cursus_users[selectedValue]);
     }
 
     //check image 
@@ -41,7 +47,7 @@ const Details = ({ route, navigation }) => {
         request.open("GET", url, true);
         request.send();
         request.onload = function () {
-            status = request.status;
+            // status = request.status;
             if (request.status == 200) //if(statusText == OK)
             {
                 setImage(url)
@@ -52,7 +58,7 @@ const Details = ({ route, navigation }) => {
     }
     useEffect(() => {
         checkImage(data.image_url);
-    }, [checkImage])
+    }, [])
 
     //normal data
     const full_name = data?.first_name + " " + data?.last_name;
@@ -64,14 +70,16 @@ const Details = ({ route, navigation }) => {
     // console.log(image)
     const login = data?.login;
     const email = data?.email;
-    const wallet = data.wallet + " ₳";
+    const wallet = data?.wallet + " ₳";
     const correction_point = data?.correction_point;
 
     // cursus infos
     const grade = cursus?.grade;
     const cursus_skills = cursus?.skills;
     const level = cursus?.level;
-    const level_per = (level % 100) - parseInt(level);
+    var level_per = 0;
+    if (level)
+        level_per = (level % 100) - parseInt(level);
 
     //projects
     const cursus_project = [];
@@ -85,6 +93,9 @@ const Details = ({ route, navigation }) => {
     const cover = {
         uri: `${coalition1?.cover_url}`,
     };
+
+    let arr = [];
+    data?.cursus_users.map((el, key) => arr.push(el.cursus.name));
 
     return (
         <SafeAreaView style={styles.container}>
@@ -127,12 +138,12 @@ const Details = ({ route, navigation }) => {
                                 flex: 0.15,
                             }}
                         >
-                            {/* <SvgCssUri
+                            <SvgCssUri
                                 width="100%"
                                 height="100%"
                                 uri={coalition1.image_url}
                                 fill="white"
-                            /> */}
+                            />
                         </View>
                         <Text style={{
                             fontSize: 17,
@@ -151,11 +162,17 @@ const Details = ({ route, navigation }) => {
                             position: "relative",
                         }}
                     >
-                        <Avatar.Image
-                            size={150}
-                            source={{ uri: `${image}` }}
-                            style={styles.img}
-                        />
+                        {image ?
+                            <Avatar.Image
+                                size={150}
+                                source={{ uri: `${image}` }}
+                                style={styles.img}
+                            /> : <Avatar.Image
+                                size={150}
+                                source={{ uri: `${defaultImage}` }}
+                                style={styles.img}
+                            />
+                        }
 
                         <Avatar.Text
                             size={19}
@@ -179,17 +196,17 @@ const Details = ({ route, navigation }) => {
                             {data?.location}
                         </Text>
                     ) : (
-                            <Text
-                                style={{
-                                    textAlign: "center",
-                                    fontWeight: "bold",
-                                    fontSize: 16,
-                                    color: "#fff",
-                                }}
-                            >
-                                unavailable
-                            </Text>
-                        )}
+                        <Text
+                            style={{
+                                textAlign: "center",
+                                fontWeight: "bold",
+                                fontSize: 16,
+                                color: "#fff",
+                            }}
+                        >
+                            unavailable
+                        </Text>
+                    )}
                 </ImageBackground>
                 <SafeAreaView
                     style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -225,52 +242,69 @@ const Details = ({ route, navigation }) => {
                         <Text style={{ marginTop: 5, color: "#fff" }}>
                             Evaluation Points: {correction_point}
                         </Text>
-                        <View style={{ display: "flex", flexDirection: "row", marginTop: 5 }}>
-                            {/* <Text style={{ color: "#fff" }}>
-                                Cursus: {" "}
-                            </Text> */}
-                            <Picker
-                                selectedValue={selectedValue}
-                                mode="dropdown"
-                                style={styles.picker}
-                                onValueChange={(selectedValue, key) => ChangeCursus(selectedValue, key)}
-                            >
-                                {
-                                    data?.cursus_users.map((item, i) => {
-                                        return (
-                                            <Picker.Item key={i} label={item.cursus?.name} value={item.cursus?.name} />
-                                        );
-                                    })
-                                }
-                                {/* <Picker.Item label="Java" value="java" />
-                            <Picker.Item label="JavaScript" value="js" /> */}
-                            </Picker>
-                        </View>
-                        {cursus?.grade != null ?
-
-                            <Text style={{ marginTop: 5, color: "#fff" }}>Grade: {grade}</Text> : <Text style={{ marginTop: 5, color: "#fff" }}>Grade: Novice</Text>
+                        {/* <TouchableOpacity onPress = {()=>{this.dropDown && this.dropDown.show();}}> */}
+                        {
+                            data?.cursus_users.length ?
+                                <View style={{ height: 40, alignItems: 'center', flexDirection: 'row', backgroundColor: "transparent", borderWidth: 1, borderColor: "gray", borderRadius: 5, padding: 5, width: 200 }}>
+                                    <ModalDropdown
+                                        options={arr}
+                                        animated={true}
+                                        // defaultIndex={0}
+                                        textStyle={{ color: "white" }}
+                                        onSelect={(selectedValue) => ChangeCursus(selectedValue)}
+                                        defaultValue={selectedValue}
+                                        // showsVerticalScrollIndicator={true}
+                                        dropdownStyle={{ width: 190, marginTop: -30 }}
+                                    />
+                                    <View style={{ position: "absolute", right: 10, top: 8 }}><Text style={{ color: "white" }}>▼</Text></View>
+                                </View> : <View><Text style={{ marginTop: 5, color: "#fff" }}>No cursus</Text></View>
                         }
+                        {/* </TouchableOpacity> */}
+                        {/* {data.cursus_users.length ?
+                            <View style={{ display: "flex", flexDirection: "row", marginTop: 5 }}>
+                                <Picker
+                                    selectedValue={selectedValue}
+                                    mode="dropdown"
+                                    style={styles.picker}
+                                    onValueChange={(selectedValue, key) => ChangeCursus(selectedValue, key)}
+                                >
+                                    {
+                                        data?.cursus_users.map((item, i) => {
+                                            return (
+                                                <Picker.Item key={i} label={item.cursus?.name} value={item.cursus?.name} />
+                                            );
+                                        })
+                                    }
+                                </Picker>
+                            </View> : <View><Text  style={{marginTop: 5, color: "#fff"}}>No cursus</Text></View>
+                        } */}
+                        {/* {cursus?.grade ?
+
+                            <Text style={{ marginTop: 5, color: "#fff" }}>Grade: {grade}</Text> : (data.cursus_users.length ? <Text style={{ marginTop: 5, color: "#fff" }}>Grade: Novice</Text> : <Text>No grade</Text>)
+                        } */}
                     </View>
-                    <View style={{ marginTop: 20, alignItems: "center", justifyContent: 'center' }}>
-                        <Progress.Bar
-                            progress={level_per}
-                            width={300}
-                            color={coalition1?.color}
-                            height={20}
-                        >
-                            <Text
-                                style={{
-                                    position: "absolute",
-                                    color: "#fff",
-                                    fontSize: 11,
-                                    marginLeft: 120,
-                                    marginTop: 3
-                                }}
+                    {(level && level_per) &&
+                        <View style={{ marginTop: 20, alignItems: "center", justifyContent: 'center' }}>
+                            <Progress.Bar
+                                progress={level_per}
+                                width={300}
+                                color={coalition1?.color}
+                                height={20}
                             >
-                                Level {level}%
-                            </Text>
-                        </Progress.Bar>
-                    </View>
+                                <Text
+                                    style={{
+                                        position: "absolute",
+                                        color: "#fff",
+                                        fontSize: 11,
+                                        marginLeft: 120,
+                                        marginTop: 3
+                                    }}
+                                >
+                                    Level {level}%
+                                </Text>
+                            </Progress.Bar>
+                        </View>
+                    }
 
                     <View style={{ flexDirection: "row", marginTop: 30, marginBottom: 10 }}>
                         <Text style={{ color: "white" }}>Skills</Text>

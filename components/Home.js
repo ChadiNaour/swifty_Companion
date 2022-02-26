@@ -62,6 +62,7 @@ const Home = ({ navigation }) => {
 
     const fetchLogin = async (login) => {
         setLoading(true);
+        login.trim();
         if (login && login !== "") {
             try {
                 var token = await AsyncStorage.getItem("access_token");
