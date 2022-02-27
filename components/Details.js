@@ -279,12 +279,11 @@ const Details = ({ route, navigation }) => {
                                 </Picker>
                             </View> : <View><Text  style={{marginTop: 5, color: "#fff"}}>No cursus</Text></View>
                         } */}
-                        {/* {cursus?.grade ?
+                        {cursus?.grade ?
 
                             <Text style={{ marginTop: 5, color: "#fff" }}>Grade: {grade}</Text> : (data.cursus_users.length ? <Text style={{ marginTop: 5, color: "#fff" }}>Grade: Novice</Text> : <Text>No grade</Text>)
-                        } */}
+                        }
                     </View>
-                    {(level && level_per) &&
                         <View style={{ marginTop: 20, alignItems: "center", justifyContent: 'center' }}>
                             <Progress.Bar
                                 progress={level_per}
@@ -305,7 +304,6 @@ const Details = ({ route, navigation }) => {
                                 </Text>
                             </Progress.Bar>
                         </View>
-                    }
 
                     <View style={{ flexDirection: "row", marginTop: 30, marginBottom: 10 }}>
                         <Text style={{ color: "white" }}>Skills</Text>
