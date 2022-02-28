@@ -37,7 +37,6 @@ const Home = ({ navigation }) => {
                 }
             );
             if (response.data) {
-                console.log(response.data);
                 var coalition = await axios.get(
                     "https://api.intra.42.fr/v2/users/" + response.data.id + "/coalitions",
                     {
@@ -46,9 +45,7 @@ const Home = ({ navigation }) => {
                         },
                     }
                 )
-                console.log("coalition is", coalition);
-                if (coalition.data)
-                {
+                if (coalition.data) {
                     setLoading(false);
                     navigation.navigate("Details", { data: response.data, coalition: coalition.data });
                 }
@@ -92,7 +89,7 @@ const Home = ({ navigation }) => {
         }
         else
             alert("you should set a login first");
-            setLoading(false)
+        setLoading(false)
     }
 
     return (
@@ -100,25 +97,25 @@ const Home = ({ navigation }) => {
             <ImageBackground
                 source={Image_background}
                 resizeMode="cover"
-                style={{flex : 1,height: "100%", width: "100%", display : "flex", justifyContent:"center"}}
+                style={{ flex: 1, height: "100%", width: "100%", display: "flex", justifyContent: "center" }}
             >
                 {!loading ?
-                <View style={styles.viewContainer}>
-                    <Image style={styles.tinyLogo} source={Home_image} resizeMode="cover" />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={onChangeLogin}
-                        value={login}
-                        placeholder="Login"
-                    />
-                    <Pressable
-                        style={styles.button}
-                        onPress={() => fetchLogin(login)}
-                    >
-                        <Text style={styles.text}>Search</Text>
-                    </Pressable>
-                </View>
-                : <ActivityIndicator size="large" color="#00b0b2" />}
+                    <View style={styles.viewContainer}>
+                        <Image style={styles.tinyLogo} source={Home_image} resizeMode="cover" />
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={onChangeLogin}
+                            value={login}
+                            placeholder="Login"
+                        />
+                        <Pressable
+                            style={styles.button}
+                            onPress={() => fetchLogin(login)}
+                        >
+                            <Text style={styles.text}>Search</Text>
+                        </Pressable>
+                    </View>
+                    : <ActivityIndicator size="large" color="#00b0b2" />}
             </ImageBackground>
         </SafeAreaView>
     )
@@ -130,7 +127,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     viewContainer: {
-        marginTop : -100,
+        marginTop: -100,
         alignItems: 'center',
         justifyContent: 'center',
     },
