@@ -37,5 +37,6 @@ read more about `expo-cli` documentation [here](https://docs.expo.dev/workflow/e
 
 Once you create the app, go to your app page and you will find the `user_id` and the `user_secret` copy them
 and fill them up in the `config.json`
+```
 
 # Screens
