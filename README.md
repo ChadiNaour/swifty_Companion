@@ -40,3 +40,5 @@ and fill them up in the `config.json`
 ```
 
 # Screens
+<img src="./screens/search.png" />
+<img src="./screens/details.png" />
