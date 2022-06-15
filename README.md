@@ -2,12 +2,6 @@
 
 This project is an introduction to develop mobile development. The goal is to create, an application in which it allow users to get infos about [42](https://www.42.fr/) students, using the 42 API.
 
-<table>
-  <tr>
-    <td valign="top"><img src="/assets/screenshots/1.gif"/></td>
-  </tr>
-</table>
-
 # Overview
 I have made the swifty-companion using `react-native` along with `expo-dev`, It contains two views, the Home view where you should find the login search input, you type in the login of the student that you want to see their infos. If the login is correct and the user exists on the 42 API, then and you will be redirected to the second view, the Profile view where you can find the student infos (Full name, Email, Level, Projects, Skills ...)
 
