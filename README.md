@@ -40,5 +40,5 @@ and fill them up in the `config.json`
 ```
 
 # Screens
-<img src="./swifty_screens/search.png" />
-<img src="./swifty_screens/details.png" />
+<img height={400px} src="./swifty_screens/search.png" />
+<img height={400px} src="./swifty_screens/details.png" />
